@@ -1,0 +1,8 @@
+# Local editor/runtime state
+vim/vim/.netrwhist
+
+# Fish stores host/session-specific universal variables here.
+fish/fish_variables
+
+# Rollback copies kept locally, not in Git.
+backups/
