@@ -61,3 +61,5 @@ function 5 --description 'Go to directory history entry 5'
 end
 
 zoxide init fish | source
+
+direnv hook fish | source
