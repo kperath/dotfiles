@@ -59,3 +59,5 @@ end
 function 5 --description 'Go to directory history entry 5'
     prevd 5
 end
+
+zoxide init fish | source
