@@ -1,7 +1,7 @@
 local mainMod = "SUPER"
 local noctCall = "qs -c noctalia-shell ipc call "
 local launchPrefix = "uwsm app -- " -- if you are not using UWSM, make this empty (e.g. "")
-local clipboardMenu = "sh -c 'pkill -x fuzzel || cliphist list | fuzzel --dmenu | cliphist decode | wl-copy'"
+local clipboardMenu = "sh -c 'pkill -x rofi || /home/daffy/.local/bin/cliphist-rofi'"
 
 ---------------------------
 ---- WINDOW MANAGEMENT ----
@@ -78,6 +78,8 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(noctCall .. "brightness decreas
 hl.bind(mainMod .. " + P",     hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit colorPicker"))
 hl.bind("Print",               hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit annotate"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit annotateWindow"))
+hl.bind(mainMod .. " + SHIFT + P",   hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit annotate"))
+hl.bind(mainMod .. " + CONTROL + P", hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit annotateWindow"))
 hl.bind(mainMod .. " + R",     hl.dsp.exec_cmd(noctCall .. "plugin:screen-toolkit toggle"))
 
 -- Theming and Wallpaper
