@@ -1,6 +1,5 @@
 colorscheme catppuccin
 
-
 " --- CLIPBOARD BEHAVIOR ---
 " Strategy: Only 'y' goes to clipboard. 'd', 'c', and 'x' stay in Vim.
 " We do this by mapping 'y' to specifically use the + register (system)
@@ -39,10 +38,6 @@ nnoremap <CR> :nohl<CR><CR>
 nnoremap <C-p> :Files<CR>
 nnoremap <C-b> :Buffers<CR>
 nnoremap <C-f> :Rg<CR>
-
-" --- GBROWSE (open file on GitHub via fugitive + rhubarb) ---
-" :GBrowse opens current file/line/range on GitHub; works in visual mode too.
-let g:github_enterprise_urls = ['https://github.rbx.com']
 
 " UNDO
 set undofile
