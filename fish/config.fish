@@ -63,3 +63,7 @@ end
 zoxide init fish | source
 
 direnv hook fish | source
+
+if status is-interactive
+    type -q fzf_key_bindings; and fzf_key_bindings
+end
