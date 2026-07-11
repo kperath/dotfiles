@@ -66,4 +66,15 @@ direnv hook fish | source
 
 if status is-interactive
     type -q fzf_key_bindings; and fzf_key_bindings
+
+    function __tmux_session_picker
+        if set -q TMUX
+            command tmux-session-picker switch
+        else
+            command tmux-session-picker attach
+        end
+        commandline -f repaint
+    end
+
+    bind ctrl-f __tmux_session_picker
 end
