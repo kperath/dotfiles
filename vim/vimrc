@@ -1,0 +1,114 @@
+"
+" --- BOOTSTRAP (portable: copy this file to ~/.vimrc, open vim, done) ---
+" Auto-clones plugins into Vim's native pack dir on first launch. Skips any
+" already installed — subsequent launches are just cheap directory checks.
+" Requires only `git` on PATH. External tools still needed for full function:
+"   rg (ripgrep)          for :Rg  — install via brew/apt/dnf
+"   fzf (binary)          for :Files/:Buffers/:Rg  — brew/apt/dnf, OR run
+"                         ~/.vim/pack/plugins/start/fzf/install --bin
+let s:pack_start = expand('~/.vim/pack/plugins/start')
+let s:plugins = [
+    \ 'tpope/vim-sleuth',
+    \ 'junegunn/fzf',
+    \ 'junegunn/fzf.vim',
+    \ 'tpope/vim-fugitive',
+    \ 'tpope/vim-rhubarb',
+    \ ]
+if !isdirectory(s:pack_start) | call mkdir(s:pack_start, 'p') | endif
+let s:did_install = 0
+for s:repo in s:plugins
+    let s:dir = s:pack_start . '/' . split(s:repo, '/')[1]
+    if !isdirectory(s:dir)
+        echo 'vim-bootstrap: cloning ' . s:repo . '...'
+        call system('git clone --depth 1 --quiet https://github.com/' . s:repo . ' ' . shellescape(s:dir))
+        if v:shell_error
+            echohl WarningMsg | echomsg 'vim-bootstrap: FAILED ' . s:repo | echohl None
+        endif
+        let s:did_install = 1
+    endif
+endfor
+if !isdirectory(expand('~/.vim/undodir'))
+    call mkdir(expand('~/.vim/undodir'), 'p')
+endif
+if s:did_install | packloadall | endif
+
+" --- CLIPBOARD BEHAVIOR ---
+set termguicolors           " Must come before colorscheme so habamax loads in GUI color mode
+silent! colorscheme habamax   " Vim 9.0+; silently falls back if unavailable
+
+" Transparent background — fires after every colorscheme load (including
+" packloadall re-triggering habamax) so the overrides always win.
+" CursorLine is intentionally kept — its bg is what makes `cursorline` visible.
+augroup transparent_bg
+    autocmd!
+    autocmd ColorScheme * highlight Normal      ctermbg=NONE guibg=NONE
+    autocmd ColorScheme * highlight NonText     ctermbg=NONE guibg=NONE
+    autocmd ColorScheme * highlight LineNr      ctermbg=NONE guibg=NONE
+    autocmd ColorScheme * highlight EndOfBuffer ctermbg=NONE guibg=NONE
+    autocmd ColorScheme * highlight SignColumn  ctermbg=NONE guibg=NONE
+    " Pin status bar to habamax's gray regardless of active colorscheme.
+    autocmd ColorScheme * highlight StatusLine   ctermfg=234 ctermbg=247 guifg=#1c1c1c guibg=#9e9e9e
+    autocmd ColorScheme * highlight StatusLineNC ctermfg=234 ctermbg=243 guifg=#1c1c1c guibg=#767676
+augroup END
+" Fire immediately for the current session (autocmd only catches future loads).
+highlight Normal      ctermbg=NONE guibg=NONE
+highlight NonText     ctermbg=NONE guibg=NONE
+highlight LineNr      ctermbg=NONE guibg=NONE
+highlight EndOfBuffer ctermbg=NONE guibg=NONE
+highlight SignColumn  ctermbg=NONE guibg=NONE
+highlight StatusLine   ctermfg=234 ctermbg=247 guifg=#1c1c1c guibg=#9e9e9e
+highlight StatusLineNC ctermfg=234 ctermbg=243 guifg=#1c1c1c guibg=#767676
+
+" Strategy: Only 'y' goes to clipboard. 'd', 'c', and 'x' stay in Vim.
+" We do this by mapping 'y' to specifically use the + register (system)
+vnoremap y "+y
+
+" --- MODERN ESSENTIALS ---
+syntax on                   " Enable syntax highlighting
+set number                  " Show line numbers
+set mouse=a                 " Enable mouse support for scrolling/clicking
+set tabstop=4               " Default when sleuth can't detect (install: see CLAUDE.md)
+set shiftwidth=4
+set softtabstop=4           " Backspace deletes a full indent, not one space
+set expandtab               " Use spaces instead of tabs
+set autoindent              " Keep indent level from previous line
+set smartindent             " Better auto-indenting for C-like languages
+filetype plugin indent on   " Per-language indent rules, required for sleuth
+set backspace=indent,eol,start " Backspace works across indents and line breaks
+set ignorecase              " Case-insensitive search
+set smartcase               " ...unless search contains a capital letter
+set incsearch               " Search as you type
+set hlsearch                " Highlight search results
+set noswapfile
+set nopaste                     " never auto-enable paste mode (disables mappings)
+if &term =~ "xterm\\|screen\\|tmux"
+    let &t_BE = "\e[?2004h"     " enable bracketed paste — terminal wraps pastes
+    let &t_BD = "\e[?2004l"     " in ESC [200~ ... ESC [201~ so vim skips re-indent
+    let &t_PS = "\e[200~"
+    let &t_PE = "\e[201~"
+endif
+
+" --- UI IMPROVEMENTS ---
+set cursorline              " Highlight the line the cursor is on
+set wildmenu                " Visual autocomplete for command menu
+set laststatus=2            " Always show the status bar
+set background=dark         " Tell Vim you're using a dark terminal theme
+
+" --- KEYS ---
+" Clear search highlights with Enter
+nnoremap <CR> :nohl<CR><CR>
+
+" --- FZF ---
+nnoremap <C-p> :Files<CR>
+nnoremap <C-b> :Buffers<CR>
+nnoremap <C-f> :Rg<CR>
+
+" --- GBROWSE (open file on GitHub via fugitive + rhubarb) ---
+" :GBrowse opens current file/line/range on GitHub; works in visual mode too.
+let g:github_enterprise_urls = ['https://github.rbx.com']
+
+" UNDO
+set undofile
+" Recommended: Set a specific directory for undo files
+" This prevents 'filename~' files from cluttering every folder you work in
+set undodir=~/.vim/undodir
