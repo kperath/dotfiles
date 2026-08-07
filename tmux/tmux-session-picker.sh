@@ -15,7 +15,7 @@ else
   current=""
 fi
 
-session=$(tmux ls -F '#{session_last_attached} #{session_name}' 2>/dev/null | sort -rn | awk '{print $2}' | grep -vFx "$current" | fzf \
+session=$(tmux ls -F '#{session_last_attached} #{session_name}' 2>/dev/null | sort -rn | awk '{print $NF}' | grep -vFx "$current" | fzf \
   --reverse \
   --prompt='session> ' \
   --preview='echo "── windows ──"; tmux list-windows -t {} -F "  #{window_index}: #{window_name}#{?window_active, *,}"; echo; echo "── screen ──"; tmux capture-pane -ep -t {}' \
